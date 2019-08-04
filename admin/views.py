@@ -3,6 +3,8 @@ import traceback
 from distutils.command.config import config
 from time import time
 
+from django.conf import settings
+from django.core.mail import send_mail
 from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -121,6 +123,13 @@ def adminAddSubmit(request):
         else:
             try:
                 use_repo = UserRepo()
+
+                subject = "Your account has been added"
+                message = "Enter this confirmation code to register "+confirmation
+                from_email = settings.EMAIL_HOST_USER
+                to_list = [email]
+                send_mail(subject, message, from_email, to_list, fail_silently=False)
+
                 if use_repo.save(user, confirmation, time):
                     context["success_msg"] = "Teacher Added, Confirmation Code is "+confirmation
             except Exception:
